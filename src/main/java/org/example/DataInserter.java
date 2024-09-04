@@ -3,6 +3,7 @@ package org.example;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,96 @@ public class DataInserter {
             try {
                 if (psInsertPatient != null) psInsertPatient.close();
                 if (psInsertDoctor != null) psInsertDoctor.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Método para deletar todas as inserções
+    public void deleteAllData() {
+        Connection connection = null;
+        PreparedStatement psDeletePatients = null;
+        PreparedStatement psDeleteDoctors = null;
+
+        try {
+            connection = DatabaseConnection.getConnection();
+            connection.setAutoCommit(false); // Desativar commit automático
+
+            // Criação dos SQLs para deletar dados
+            String sqlDeletePatients = "TRUNCATE TABLE Patients CASCADE";
+            String sqlDeleteDoctors = "TRUNCATE TABLE Doctors CASCADE";
+
+            psDeletePatients = connection.prepareStatement(sqlDeletePatients);
+            psDeleteDoctors = connection.prepareStatement(sqlDeleteDoctors);
+
+            // Executar a exclusão
+            psDeletePatients.executeUpdate();
+            psDeleteDoctors.executeUpdate();
+
+            connection.commit(); // Confirmar a exclusão
+            System.out.println("Todas as inserções foram deletadas com sucesso.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                if (psDeletePatients != null) psDeletePatients.close();
+                if (psDeleteDoctors != null) psDeleteDoctors.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Método para adicionar múltiplos horários disponíveis para um médico
+    public void addAvailableTimes(int doctorId, List<Time> newTimes) {
+        Connection connection = null;
+        PreparedStatement psUpdateDoctor = null;
+
+        try {
+            connection = DatabaseConnection.getConnection();
+            connection.setAutoCommit(false); // Desativar commit automático
+
+            // SQL para atualizar o horário disponível do médico
+            String sqlUpdateDoctor = "UPDATE Doctors " +
+                    "SET schedule = array_cat(schedule, ?) " + // Usando array_cat para concatenar arrays
+                    "WHERE id = ?";
+
+            psUpdateDoctor = connection.prepareStatement(sqlUpdateDoctor);
+
+            // Cria um array SQL a partir da lista de horários
+            Time[] timeArray = newTimes.toArray(new Time[0]);
+            psUpdateDoctor.setArray(1, connection.createArrayOf("TIME", timeArray));
+            psUpdateDoctor.setInt(2, doctorId);
+
+            // Executar a atualização
+            psUpdateDoctor.executeUpdate();
+            connection.commit(); // Confirmar a atualização
+
+            System.out.println("Horários disponíveis adicionados com sucesso para o médico com ID " + doctorId);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                if (psUpdateDoctor != null) psUpdateDoctor.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();

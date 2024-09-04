@@ -6,21 +6,21 @@ Este projeto consiste no desenvolvimento de um sistema de gestão para uma clín
 ## Tabelas
 
 ### 1. **Patients**
-Armazena informações dos pacientes da clínica.
+Armazena as informações dos pacientes da clínica.
 
 ### 2. **Doctors**
-Mantém dados sobre os médicos da clínica, incluindo especialidade e horários de atendimento.
+Mantém os dados sobre os médicos da clínica, incluindo a sua especialidade e horários de atendimento.
 
 ### 3. **Appointments**
 Registra os agendamentos de consultas, associando pacientes e médicos.
 
 ### 4. **MedicalHistory**
-Armazena os históricos médicos dos pacientes, incluindo diagnósticos, tratamentos e prescrições.
+Armazena os históricos médicos dos pacientes, incluindo diagnósticos, tratamentos e prescrições médicas.
 
 ## Procedures
 
 ### 1. **ScheduleAppointment**
-Procedure para agendar uma nova consulta. Verifica a disponibilidade do médico para a data e hora solicitadas e, se disponível, registra o agendamento.
+Procedure para agendar uma nova consulta. Verifica a disponibilidade do médico para a data e hora solicitadas e, caso disponível, registra o agendamento.
 
 ### 2. **CancelAppointment**
 Procedure que cancela um agendamento existente, liberando o horário do médico para que novas consultas possam ser agendadas.

@@ -40,7 +40,11 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
     doctor_available BOOLEAN;
+    start_time TIMESTAMP;
+    end_time TIMESTAMP;
 BEGIN
+    start_time := clock_timestamp();
+    
     SELECT availability
     INTO doctor_available
     FROM Doctors
@@ -60,6 +64,9 @@ BEGIN
     ELSE
         RAISE EXCEPTION 'Médico não está disponível no horário solicitado';
     END IF;
+    
+    end_time := clock_timestamp();
+    RAISE NOTICE 'Tempo de execução: % ms', EXTRACT(MILLISECOND FROM end_time - start_time);
 END;
 $$;
 
@@ -72,7 +79,11 @@ DECLARE
     v_doctor_id INTEGER;
     v_time TIME;
     v_date DATE;
+    start_time TIMESTAMP;
+    end_time TIMESTAMP;
 BEGIN
+    start_time := clock_timestamp();
+
     SELECT doctor_id, time, date
     INTO v_doctor_id, v_time, v_date
     FROM Appointments
@@ -86,6 +97,9 @@ BEGIN
     WHERE id = v_doctor_id;
 
     RAISE NOTICE 'Consulta cancelada com sucesso';
+
+    end_time := clock_timestamp();
+    RAISE NOTICE 'Tempo de execução: % ms', EXTRACT(MILLISECOND FROM end_time - start_time);
 END;
 $$;
 
@@ -97,10 +111,18 @@ CREATE OR REPLACE PROCEDURE UpdateMedicalHistory(
 )
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    start_time TIMESTAMP;
+    end_time TIMESTAMP;
 BEGIN
+    start_time := clock_timestamp();
+
     INSERT INTO MedicalHistory (patient_id, diagnosis, treatment, prescription)
     VALUES (p_patient_id, p_diagnosis, p_treatment, p_prescription);
 
     RAISE NOTICE 'Histórico médico atualizado com sucesso';
+
+    end_time := clock_timestamp();
+    RAISE NOTICE 'Tempo de execução: % ms', EXTRACT(MILLISECOND FROM end_time - start_time);
 END;
 $$;

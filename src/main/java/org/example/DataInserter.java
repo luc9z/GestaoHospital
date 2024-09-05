@@ -26,7 +26,7 @@ public class DataInserter {
             psInsertPatient = connection.prepareStatement(sqlInsertPatient);
             psInsertDoctor = connection.prepareStatement(sqlInsertDoctor);
 
-            for (int batch = 1; batch <= 8; batch++) {
+            for (int batch = 1; batch <= 4; batch++) {
                 List<String[]> patientData = new ArrayList<>();
                 List<String[]> doctorData = new ArrayList<>();
 
